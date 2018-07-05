@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: common-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
+
+
+server:
+  port: 7000
