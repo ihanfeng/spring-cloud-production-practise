@@ -9,6 +9,9 @@
   - [微服务](#microservice)
 - [第一个微服务](#first-app)
   - [声明服务接口](#declare-api)
+  - [实现服务接口](#implement-api)
+  - [发布服务接口](#deploy-api)
+  - [在开发环境启动服务](#dev-launch)
 
 <a name="preface"></a>
 
@@ -210,9 +213,69 @@ public class AppendLogRes extends CommonApiRes {
 }
 ```
 
-显而易见，接口定义为一个普通的java interface。
-
-* 使用@RequestMapping注解定义接口访问的url
+* 使用`@RequestMapping`注解定义接口访问的url
 * 使用POJO定义输入和输出
 * 使用JSR303注解约束输入项
-* 使用@ApiOperation和@ApiModelProperty对方法和成员进行注释（这两个是SpringFox注解，可用于产生接口文档，稍后会演示如何使用）
+* 使用`@ApiOperation`和`@ApiModelProperty`对方法和成员进行注释（这两个是`SpringFox`注解，可用于产生接口文档，稍后会演示如何使用）
+
+<a name="implement-api">实现服务接口</a>
+
+### 实现服务接口
+
+让我们在common-service模块中做一个空的实现
+
+```java
+//LogApiImpl
+package com.github.richterplus.common.api.impl;
+
+//省略import
+
+@RestController
+class LogApiImpl implements LogApi {
+
+    @Override
+    public AppendLogRes append(@RequestBody @Validated AppendLogReq req) {
+        return new AppendLogRes() {
+            {
+                setLogUuid(UUID.randomUUID().toString());
+            }
+        };
+    }
+}
+```
+
+如您所见，`LogApiImpl.append`方法直接返回一个包含随机UUID的`AppendLogRes`对象。
+
+<a name="deploy-api"></a>
+
+### 发布服务接口
+
+* 部署`Nexus Repository Oss 3`建立私有仓库
+* 在Maven的配置文件中设定发布仓库为私有仓库
+* 使用mvn deploy命令发布common-api到私有仓库
+* 如果您使用的是诸如IDEA之类集成开发环境，可直接在Maven Projects菜单中找到common-api模块，双击Lifecycle中的deploy即可
+
+<a name="dev-launch"></a>
+
+### 在开发环境启动服务
+
+在common-service模块的根package中放入Bootstrap类
+
+```java
+package com.github.richterplus.common;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Bootstrap {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Bootstrap.class, args);
+    }
+}
+```
+
+在集成开发环境中选择Bootstrap.java运行或调试即可
+
+[【回到顶端】](#top)
