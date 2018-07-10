@@ -1,4 +1,4 @@
-# 一种用于生产实践的基于Spring Cloud的小型互联网应用架构
+# 逐步构建一种用于生产实践的基于Spring Cloud的小型互联网应用架构
 
 <a name="top"></a>
 
@@ -12,6 +12,9 @@
   - [实现服务接口](#implement-api)
   - [发布服务接口](#deploy-api)
   - [在开发环境启动服务](#dev-launch)
+  - [生成在线接口文档](#rest-doc)
+- [第二个微服务](#second-app)
+  - []
 
 <a name="preface"></a>
 
@@ -146,7 +149,7 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 客户端id
      */
-    @ApiModelProperty("客户端id")
+    @ApiModelProperty(value = "客户端id", required = true)
     @NotNull
     @Size(max = 20)
     private String clientId;
@@ -154,7 +157,7 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 客户端版本号
      */
-    @ApiModelProperty("客户端版本号")
+    @ApiModelProperty(value = "客户端版本号", required = true)
     @NotNull
     @Size(max = 10)
     private String clientVersion;
@@ -162,28 +165,28 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 用户id
      */
-    @ApiModelProperty("用户id")
+    @ApiModelProperty(value = "用户id", required = true)
     @NotNull
     private Integer userId;
 
     /**
      * 日志类型
      */
-    @ApiModelProperty("日志类型")
+    @ApiModelProperty(value = "日志类型", required = true)
     @NotNull
     private Integer logType;
 
     /**
      * 对象id
      */
-    @ApiModelProperty("对象id")
+    @ApiModelProperty(value = "对象id", required = true)
     @NotNull
     private List<Integer> objectIds;
 
     /**
      * 日志内容
      */
-    @ApiModelProperty("日志内容")
+    @ApiModelProperty(value = "日志内容", required = true)
     @NotNull
     private String message;
 
@@ -244,7 +247,7 @@ class LogApiImpl implements LogApi {
 }
 ```
 
-如您所见，`LogApiImpl.append`方法直接返回一个包含随机UUID的`AppendLogRes`对象。
+如您所见，`LogApiImpl.append`方法直接返回一个包含随机UUID的`AppendLogRes`对象，请别着急，我们会在后面详细介绍如何完整实现该接口。
 
 <a name="deploy-api"></a>
 
@@ -252,6 +255,7 @@ class LogApiImpl implements LogApi {
 
 * 部署`Nexus Repository Oss 3`建立私有仓库
 * 在Maven的配置文件中设定发布仓库为私有仓库
+* 在`pom.xml`中配置maven-source-plugin和maven-javadoc-plugin确保源代码和javadoc的部署
 * 使用mvn deploy命令发布common-api到私有仓库
 * 如果您使用的是诸如IDEA之类集成开发环境，可直接在Maven Projects菜单中找到common-api模块，双击Lifecycle中的deploy即可
 
@@ -276,6 +280,80 @@ public class Bootstrap {
 }
 ```
 
-在集成开发环境中选择Bootstrap.java运行或调试即可
+然后添加配置文件`bootstrap.yml`，将服务名称设置为common-service，端口号设置为7000
+
+```yaml
+spring:
+  profiles:
+    active: dev
+  application:
+    name: common-service
+
+server:
+  port: 7000
+
+```
+
+在集成开发环境中选择Bootstrap.java运行或调试即可，然后我们可以在命令行中输入curl或者使用Postman之类的工具来验证服务是否正常运行。
+
+```shell
+#使用curl命令请求服务
+curl -X PUT -H 'content-type: application/json' -d '{"requestDateTime": 1530686906,"clientId": "","clientVersion": "","userId": 0,"logType": 0,"objectIds": [],"message": ""}' http://localhost:7000/log/append
+```
+
+```json
+//服务正常返回数据
+{
+    "responseDateTime": 1531206217600,
+    "logUuid": "9e479a4f-f4ee-4faa-b973-32459cb09461"
+}
+```
+
+<a name="rest-doc"></a>
+
+### 生成在线接口文档
+
+在`pom.xml`中增加对SpringFox的依赖
+
+```xml
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>${springfox-version}</version>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-bean-validators</artifactId>
+    <version>${springfox-version}</version>
+</dependency>
+```
+
+在config包中增加一个SpringFoxConfig类
+
+```java
+//SpringFoxConfig.java
+package com.github.richterplus.common.config;
+
+//省略import
+
+@Configuration
+@EnableSwagger2
+@Import(BeanValidatorPluginsConfiguration.class) //确保自动识别JSR303注解
+class SpringFoxConfig {
+
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class)) //仅对包含@RestControll注解的类生成文档
+                .build();
+    }
+}
+```
+
+请确保在对应的方法添加了`@ApiOperation`注解，在对应的属性添加了`@ApiModelProperty`注解，
+启动服务后，在浏览器访问 http://localhost:7000/swagger-ui.html 即可查阅文档和模拟接口请求。
 
 [【回到顶端】](#top)
+
+<a name="second-app"></a>
