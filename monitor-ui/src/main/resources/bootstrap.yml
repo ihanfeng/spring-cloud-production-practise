@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: monitor-ui
+  boot:
+    admin:
+      discovery:
+        ignored-services: consul
+
+server:
+  port: 7100
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
