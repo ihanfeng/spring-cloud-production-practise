@@ -15,7 +15,7 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 客户端id
      */
-    @ApiModelProperty("客户端id")
+    @ApiModelProperty(value = "客户端id", required = true)
     @NotNull
     @Size(max = 20)
     private String clientId;
@@ -23,7 +23,7 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 客户端版本号
      */
-    @ApiModelProperty("客户端版本号")
+    @ApiModelProperty(value = "客户端版本号", required = true)
     @NotNull
     @Size(max = 10)
     private String clientVersion;
@@ -31,28 +31,28 @@ public class AppendLogReq extends CommonApiReq {
     /**
      * 用户id
      */
-    @ApiModelProperty("用户id")
+    @ApiModelProperty(value = "用户id", required = true)
     @NotNull
     private Integer userId;
 
     /**
      * 日志类型
      */
-    @ApiModelProperty("日志类型")
+    @ApiModelProperty(value = "日志类型", required = true)
     @NotNull
     private Integer logType;
 
     /**
      * 对象id
      */
-    @ApiModelProperty("对象id")
+    @ApiModelProperty(value = "对象id", required = true)
     @NotNull
     private List<Integer> objectIds;
 
     /**
      * 日志内容
      */
-    @ApiModelProperty("日志内容")
+    @ApiModelProperty(value = "日志内容", required = true)
     @NotNull
     private String message;
 
