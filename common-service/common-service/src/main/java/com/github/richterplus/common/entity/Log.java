@@ -1,60 +1,65 @@
-package com.github.richterplus.common.api.bean.log;
-
-import com.github.richterplus.common.api.bean.CommonApiReq;
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.List;
+package com.github.richterplus.common.entity;
 
 /**
- * 添加日志请求
+ * 日志
  */
-public class AppendLogReq extends CommonApiReq {
+public class Log {
+
+    /**
+     * 日志id
+     */
+    private Integer logId;
 
     /**
      * 客户端id
      */
-    @ApiModelProperty("客户端id")
-    @NotNull
-    @Size(max = 20)
     private String clientId;
 
     /**
      * 客户端版本号
      */
-    @ApiModelProperty("客户端版本号")
-    @NotNull
-    @Size(max = 10)
     private String clientVersion;
 
     /**
      * 用户id
      */
-    @ApiModelProperty("用户id")
-    @NotNull
     private Integer userId;
 
     /**
      * 日志类型
      */
-    @ApiModelProperty("日志类型")
-    @NotNull
     private Integer logType;
 
     /**
-     * 对象id
+     * 关联对象id
      */
-    @ApiModelProperty("对象id")
-    @NotNull
-    private List<Integer> objectIds;
+    private String objectIds;
 
     /**
      * 日志内容
      */
-    @ApiModelProperty("日志内容")
-    @NotNull
     private String message;
+
+    /**
+     * 日志记录日期
+     */
+    private java.util.Date logDate;
+
+    /**
+     * 获取日志id
+     * @return 日志id
+     */
+    public Integer getLogId() {
+        return logId;
+    }
+
+    /**
+     * 设置日志id
+     * @param logId 日志id
+     */
+    public void setLogId(Integer logId) {
+        this.logId = logId;
+    }
 
     /**
      * 获取客户端id
@@ -121,18 +126,18 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 获取对象id
-     * @return 对象id
+     * 获取关联对象id
+     * @return 关联对象id
      */
-    public List<Integer> getObjectIds() {
+    public String getObjectIds() {
         return objectIds;
     }
 
     /**
-     * 设置对象id
-     * @param objectIds 对象id
+     * 设置关联对象id
+     * @param objectIds 关联对象id
      */
-    public void setObjectIds(List<Integer> objectIds) {
+    public void setObjectIds(String objectIds) {
         this.objectIds = objectIds;
     }
 
@@ -151,4 +156,21 @@ public class AppendLogReq extends CommonApiReq {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    /**
+     * 获取日志记录日期
+     * @return 日志记录日期
+     */
+    public java.util.Date getLogDate() {
+        return logDate;
+    }
+
+    /**
+     * 设置日志记录日期
+     * @param logDate 日志记录日期
+     */
+    public void setLogDate(java.util.Date logDate) {
+        this.logDate = logDate;
+    }
+
 }

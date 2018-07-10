@@ -1,5 +1,7 @@
 package com.github.richterplus.common.api.bean;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
 /**
@@ -10,6 +12,7 @@ public abstract class CommonApiRes {
     /**
      * 响应日期
      */
+    @ApiModelProperty("响应日期")
     private Date responseDateTime = new Date();
 
 	/**

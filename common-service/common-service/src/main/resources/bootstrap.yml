@@ -6,6 +6,8 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: true
+  jmx:
+    enabled: false
 
 management:
   endpoints:

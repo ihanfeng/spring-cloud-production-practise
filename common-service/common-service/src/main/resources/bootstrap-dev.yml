@@ -1,5 +1,4 @@
 spring:
-  security:
-    user:
-      name: actuator
-      password: actuator
+  cloud:
+    consul:
+      enabled: false
