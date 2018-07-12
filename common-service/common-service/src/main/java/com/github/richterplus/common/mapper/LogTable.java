@@ -22,19 +22,14 @@ public class LogTable extends Table {
     }
 
     /**
-     * 日志id
+     * 用户日志id
      */
     public Column<LogTable, Integer> log_id = new Column<>("log_id");
 
     /**
-     * 客户端id
+     * 日志uuid
      */
-    public Column<LogTable, String> client_id = new Column<>("client_id");
-
-    /**
-     * 客户端版本号
-     */
-    public Column<LogTable, String> client_version = new Column<>("client_version");
+    public Column<LogTable, String> log_uuid = new Column<>("log_uuid");
 
     /**
      * 用户id
@@ -47,7 +42,7 @@ public class LogTable extends Table {
     public Column<LogTable, Integer> log_type = new Column<>("log_type");
 
     /**
-     * 关联对象id
+     * 对象id
      */
     public Column<LogTable, String> object_ids = new Column<>("object_ids");
 
@@ -57,7 +52,7 @@ public class LogTable extends Table {
     public Column<LogTable, String> message = new Column<>("message");
 
     /**
-     * 日志记录日期
+     * 日志日期
      */
     public Column<LogTable, java.util.Date> log_date = new Column<>("log_date");
 }

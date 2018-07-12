@@ -13,22 +13,6 @@ import java.util.List;
 public class AppendLogReq extends CommonApiReq {
 
     /**
-     * 客户端id
-     */
-    @ApiModelProperty(value = "客户端id", required = true)
-    @NotNull
-    @Size(max = 20)
-    private String clientId;
-
-    /**
-     * 客户端版本号
-     */
-    @ApiModelProperty(value = "客户端版本号", required = true)
-    @NotNull
-    @Size(max = 10)
-    private String clientVersion;
-
-    /**
      * 用户id
      */
     @ApiModelProperty(value = "用户id", required = true)
@@ -57,39 +41,6 @@ public class AppendLogReq extends CommonApiReq {
     private String message;
 
     /**
-     * 获取客户端id
-     * @return 客户端id
-     */
-    public String getClientId() {
-        return clientId;
-    }
-
-    /**
-     * 设置客户端id
-     * @param clientId 客户端id
-     */
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    /**
-     * 获取客户端版本号
-     * @return 客户端版本号
-     */
-    public String getClientVersion() {
-        return clientVersion;
-    }
-
-    /**
-     * 设置客户端版本号
-     * @param clientVersion 客户端版本号
-     */
-    public void setClientVersion(String clientVersion) {
-        this.clientVersion = clientVersion;
-    }
-
-    /**
-     * 获取用户id
      * @return 用户id
      */
     public Integer getUserId() {
@@ -97,7 +48,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 设置用户id
      * @param userId 用户id
      */
     public void setUserId(Integer userId) {
@@ -105,7 +55,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 获取日志类型
      * @return 日志类型
      */
     public Integer getLogType() {
@@ -113,7 +62,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 设置日志类型
      * @param logType 日志类型
      */
     public void setLogType(Integer logType) {
@@ -121,7 +69,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 获取对象id
      * @return 对象id
      */
     public List<Integer> getObjectIds() {
@@ -129,7 +76,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 设置对象id
      * @param objectIds 对象id
      */
     public void setObjectIds(List<Integer> objectIds) {
@@ -137,7 +83,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 获取日志内容
      * @return 日志内容
      */
     public String getMessage() {
@@ -145,7 +90,6 @@ public class AppendLogReq extends CommonApiReq {
     }
 
     /**
-     * 设置日志内容
      * @param message 日志内容
      */
     public void setMessage(String message) {

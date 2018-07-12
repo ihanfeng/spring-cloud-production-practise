@@ -14,6 +14,7 @@ class LogApiImpl implements LogApi {
 
     @Override
     public AppendLogRes append(@RequestBody @Validated AppendLogReq req) {
+
         return new AppendLogRes() {
             {
                 setLogUuid(UUID.randomUUID().toString());

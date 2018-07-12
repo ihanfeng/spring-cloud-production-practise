@@ -6,19 +6,14 @@ package com.github.richterplus.common.entity;
 public class Log {
 
     /**
-     * 日志id
+     * 用户日志id
      */
     private Integer logId;
 
     /**
-     * 客户端id
+     * 日志uuid
      */
-    private String clientId;
-
-    /**
-     * 客户端版本号
-     */
-    private String clientVersion;
+    private String logUuid;
 
     /**
      * 用户id
@@ -31,7 +26,7 @@ public class Log {
     private Integer logType;
 
     /**
-     * 关联对象id
+     * 对象id
      */
     private String objectIds;
 
@@ -41,56 +36,40 @@ public class Log {
     private String message;
 
     /**
-     * 日志记录日期
+     * 日志日期
      */
     private java.util.Date logDate;
 
     /**
-     * 获取日志id
-     * @return 日志id
+     * 获取用户日志id
+     * @return 用户日志id
      */
     public Integer getLogId() {
         return logId;
     }
 
     /**
-     * 设置日志id
-     * @param logId 日志id
+     * 设置用户日志id
+     * @param logId 用户日志id
      */
     public void setLogId(Integer logId) {
         this.logId = logId;
     }
 
     /**
-     * 获取客户端id
-     * @return 客户端id
+     * 获取日志uuid
+     * @return 日志uuid
      */
-    public String getClientId() {
-        return clientId;
+    public String getLogUuid() {
+        return logUuid;
     }
 
     /**
-     * 设置客户端id
-     * @param clientId 客户端id
+     * 设置日志uuid
+     * @param logUuid 日志uuid
      */
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    /**
-     * 获取客户端版本号
-     * @return 客户端版本号
-     */
-    public String getClientVersion() {
-        return clientVersion;
-    }
-
-    /**
-     * 设置客户端版本号
-     * @param clientVersion 客户端版本号
-     */
-    public void setClientVersion(String clientVersion) {
-        this.clientVersion = clientVersion;
+    public void setLogUuid(String logUuid) {
+        this.logUuid = logUuid;
     }
 
     /**
@@ -126,16 +105,16 @@ public class Log {
     }
 
     /**
-     * 获取关联对象id
-     * @return 关联对象id
+     * 获取对象id
+     * @return 对象id
      */
     public String getObjectIds() {
         return objectIds;
     }
 
     /**
-     * 设置关联对象id
-     * @param objectIds 关联对象id
+     * 设置对象id
+     * @param objectIds 对象id
      */
     public void setObjectIds(String objectIds) {
         this.objectIds = objectIds;
@@ -158,16 +137,16 @@ public class Log {
     }
 
     /**
-     * 获取日志记录日期
-     * @return 日志记录日期
+     * 获取日志日期
+     * @return 日志日期
      */
     public java.util.Date getLogDate() {
         return logDate;
     }
 
     /**
-     * 设置日志记录日期
-     * @param logDate 日志记录日期
+     * 设置日志日期
+     * @param logDate 日志日期
      */
     public void setLogDate(java.util.Date logDate) {
         this.logDate = logDate;

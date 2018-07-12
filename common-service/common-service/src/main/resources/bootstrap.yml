@@ -12,6 +12,5 @@ management:
       exposure:
         include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
 
-
 server:
   port: 7000

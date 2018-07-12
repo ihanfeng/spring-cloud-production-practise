@@ -3,8 +3,7 @@
 <mapper namespace="com.github.richterplus.common.mapper.LogMapper">
     <resultMap type="com.github.richterplus.common.entity.Log" id="log">
         <id column="log_id" property="logId"/>
-        <result column="client_id" property="clientId"/>
-        <result column="client_version" property="clientVersion"/>
+        <result column="log_uuid" property="logUuid"/>
         <result column="user_id" property="userId"/>
         <result column="log_type" property="logType"/>
         <result column="object_ids" property="objectIds"/>
@@ -17,14 +16,13 @@
     </select>
 
     <select id="select" parameterType="com.github.mybatisq.Query" resultMap="log">
-        select <if test="selectedColumns.size > 0"><foreach collection="selectedColumns" item="col" separator=",">${tableAlias}.`${col.name}`</foreach></if><if test="selectedColumns.size == 0">${tableAlias}.`log_id`,${tableAlias}.`client_id`,${tableAlias}.`client_version`,${tableAlias}.`user_id`,${tableAlias}.`log_type`,${tableAlias}.`object_ids`,${tableAlias}.`message`,${tableAlias}.`log_date`</if> <include refid="com.github.richterplus.common.mapper.QMapper.selectFrom"/>
+        select <if test="selectedColumns.size > 0"><foreach collection="selectedColumns" item="col" separator=",">${tableAlias}.`${col.name}`</foreach></if><if test="selectedColumns.size == 0">${tableAlias}.`log_id`,${tableAlias}.`log_uuid`,${tableAlias}.`user_id`,${tableAlias}.`log_type`,${tableAlias}.`object_ids`,${tableAlias}.`message`,${tableAlias}.`log_date`</if> <include refid="com.github.richterplus.common.mapper.QMapper.selectFrom"/>
     </select>
 
     <insert id="insert" parameterType="com.github.richterplus.common.entity.Log" useGeneratedKeys="true" keyProperty="logId">
         <trim prefix="insert `log` (" suffix=")" suffixOverrides=",">
             <if test="logId != null">`log_id`,</if>
-            <if test="clientId != null">`client_id`,</if>
-            <if test="clientVersion != null">`client_version`,</if>
+            <if test="logUuid != null">`log_uuid`,</if>
             <if test="userId != null">`user_id`,</if>
             <if test="logType != null">`log_type`,</if>
             <if test="objectIds != null">`object_ids`,</if>
@@ -33,8 +31,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="logId != null">#{logId},</if>
-            <if test="clientId != null">#{clientId},</if>
-            <if test="clientVersion != null">#{clientVersion},</if>
+            <if test="logUuid != null">#{logUuid},</if>
             <if test="userId != null">#{userId},</if>
             <if test="logType != null">#{logType},</if>
             <if test="objectIds != null">#{objectIds},</if>
@@ -47,8 +44,7 @@
         <foreach collection="entityList" item="item" separator=";">
             <trim prefix="insert `log` (" suffix=")" suffixOverrides=",">
                 <if test="item.logId != null">`log_id`,</if>
-                <if test="item.clientId != null">`client_id`,</if>
-                <if test="item.clientVersion != null">`client_version`,</if>
+                <if test="item.logUuid != null">`log_uuid`,</if>
                 <if test="item.userId != null">`user_id`,</if>
                 <if test="item.logType != null">`log_type`,</if>
                 <if test="item.objectIds != null">`object_ids`,</if>
@@ -57,22 +53,19 @@
             </trim>
             <trim prefix="values (" suffix=")" suffixOverrides=",">
                 <if test="item.logId != null">#{item.logId},</if>
-                <if test="item.clientId != null">#{item.clientId},</if>
-                <if test="item.clientVersion != null">#{item.clientVersion},</if>
+                <if test="item.logUuid != null">#{item.logUuid},</if>
                 <if test="item.userId != null">#{item.userId},</if>
                 <if test="item.logType != null">#{item.logType},</if>
                 <if test="item.objectIds != null">#{item.objectIds},</if>
                 <if test="item.message != null">#{item.message},</if>
                 <if test="item.logDate != null">#{item.logDate},</if>
             </trim>
-
         </foreach>
-
     </insert>
+
     <update id="update" parameterType="com.github.richterplus.common.entity.Log">
         <trim prefix="update `log` set" suffix="where `log_id`=#{logId}" suffixOverrides=",">
-            <if test="clientId != null">`client_id`=#{clientId},</if>
-            <if test="clientVersion != null">`client_version`=#{clientVersion},</if>
+            <if test="logUuid != null">`log_uuid`=#{logUuid},</if>
             <if test="userId != null">`user_id`=#{userId},</if>
             <if test="logType != null">`log_type`=#{logType},</if>
             <if test="objectIds != null">`object_ids`=#{objectIds},</if>
@@ -82,26 +75,21 @@
     </update>
 
     <update id="batchUpdate">
-
         <foreach collection="entityList" item="item" separator=";">
             <trim prefix="update `log` set" suffix="where `log_id`=#{item.logId}" suffixOverrides=",">
-                <if test="item.clientId != null">`client_id`=#{item.clientId},</if>
-                <if test="item.clientVersion != null">`client_version`=#{item.clientVersion},</if>
+                <if test="item.logUuid != null">`log_uuid`=#{item.logUuid},</if>
                 <if test="item.userId != null">`user_id`=#{item.userId},</if>
                 <if test="item.logType != null">`log_type`=#{item.logType},</if>
                 <if test="item.objectIds != null">`object_ids`=#{item.objectIds},</if>
                 <if test="item.message != null">`message`=#{item.message},</if>
                 <if test="item.logDate != null">`log_date`=#{item.logDate},</if>
             </trim>
-
         </foreach>
-
     </update>
-    <update id="batchUpdateByCase">
 
+    <update id="batchUpdateByCase">
         <trim prefix="update `log` set" suffixOverrides=",">
-            <foreach collection="entityList" item="item" open="`client_id`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{clientId}</foreach>
-            <foreach collection="entityList" item="item" open="`client_version`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{clientVersion}</foreach>
+            <foreach collection="entityList" item="item" open="`log_uuid`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{logUuid}</foreach>
             <foreach collection="entityList" item="item" open="`user_id`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{userId}</foreach>
             <foreach collection="entityList" item="item" open="`log_type`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{logType}</foreach>
             <foreach collection="entityList" item="item" open="`object_ids`=case `log_id` " close=" end," separator=" ">when #{item.logId} then #{objectIds}</foreach>
@@ -110,6 +98,7 @@
         </trim>
         <foreach collection="entityList" item="item" open="where `log_id` in (" close=")" separator=",">#{item.logId}</foreach>
     </update>
+
     <delete id="delete">
         delete from `log` where log_id=#{logId}
     </delete>
