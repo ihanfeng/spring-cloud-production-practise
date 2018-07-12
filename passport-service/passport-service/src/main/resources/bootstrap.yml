@@ -12,5 +12,9 @@ management:
       exposure:
         include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
 
+feign:
+  hystrix:
+    enabled: true
+
 server:
   port: 7001

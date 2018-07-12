@@ -2,6 +2,7 @@ package com.github.richterplus.passport.api.impl;
 
 import com.github.richterplus.common.api.LogApi;
 import com.github.richterplus.common.api.bean.log.AppendLogReq;
+import com.github.richterplus.common.api.bean.log.AppendLogRes;
 import com.github.richterplus.common.api.enums.LogType;
 import com.github.richterplus.passport.api.AccountApi;
 import com.github.richterplus.passport.api.bean.account.LoginReq;
@@ -25,7 +26,7 @@ class AccountApiImpl implements AccountApi {
     @Override
     public RegisterAccountRes register(@RequestBody @Validated RegisterAccountReq req) {
 
-        logApi.append(new AppendLogReq() {
+        AppendLogRes appendLogRes = logApi.append(new AppendLogReq() {
             {
                 setLogType(LogType.REGISTER);
                 setUserId(0);
