@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    consul:
+      enabled: false
+
+common-service:
+  ribbon:
+    listOfServers: localhost:7000

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.richterplus.passport.mapper.AccountMapper">
+    <resultMap type="com.github.richterplus.passport.entity.Account" id="account">
+        <id column="account_id" property="accountId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="register_date" property="registerDate"/>
+    </resultMap>
+
+    <select id="count" parameterType="com.github.mybatisq.Query" resultType="java.lang.Integer">
+        select count(0) <include refid="com.github.richterplus.passport.mapper.QMapper.countFrom"/>
+    </select>
+
+    <select id="select" parameterType="com.github.mybatisq.Query" resultMap="account">
+        select <if test="selectedColumns.size > 0"><foreach collection="selectedColumns" item="col" separator=",">${tableAlias}.`${col.name}`</foreach></if><if test="selectedColumns.size == 0">${tableAlias}.`account_id`,${tableAlias}.`username`,${tableAlias}.`password`,${tableAlias}.`register_date`</if> <include refid="com.github.richterplus.passport.mapper.QMapper.selectFrom"/>
+    </select>
+
+    <insert id="insert" parameterType="com.github.richterplus.passport.entity.Account" useGeneratedKeys="true" keyProperty="accountId">
+        <trim prefix="insert `account` (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">`account_id`,</if>
+            <if test="username != null">`username`,</if>
+            <if test="password != null">`password`,</if>
+            <if test="registerDate != null">`register_date`,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="accountId != null">#{accountId},</if>
+            <if test="username != null">#{username},</if>
+            <if test="password != null">#{password},</if>
+            <if test="registerDate != null">#{registerDate},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsert" useGeneratedKeys="true">
+        <foreach collection="entityList" item="item" separator=";">
+            <trim prefix="insert `account` (" suffix=")" suffixOverrides=",">
+                <if test="item.accountId != null">`account_id`,</if>
+                <if test="item.username != null">`username`,</if>
+                <if test="item.password != null">`password`,</if>
+                <if test="item.registerDate != null">`register_date`,</if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.accountId != null">#{item.accountId},</if>
+                <if test="item.username != null">#{item.username},</if>
+                <if test="item.password != null">#{item.password},</if>
+                <if test="item.registerDate != null">#{item.registerDate},</if>
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.github.richterplus.passport.entity.Account">
+        <trim prefix="update `account` set" suffix="where `account_id`=#{accountId}" suffixOverrides=",">
+            <if test="username != null">`username`=#{username},</if>
+            <if test="password != null">`password`=#{password},</if>
+            <if test="registerDate != null">`register_date`=#{registerDate},</if>
+        </trim>
+    </update>
+
+    <update id="batchUpdate">
+        <foreach collection="entityList" item="item" separator=";">
+            <trim prefix="update `account` set" suffix="where `account_id`=#{item.accountId}" suffixOverrides=",">
+                <if test="item.username != null">`username`=#{item.username},</if>
+                <if test="item.password != null">`password`=#{item.password},</if>
+                <if test="item.registerDate != null">`register_date`=#{item.registerDate},</if>
+            </trim>
+        </foreach>
+    </update>
+
+    <update id="batchUpdateByCase">
+        <trim prefix="update `account` set" suffixOverrides=",">
+            <foreach collection="entityList" item="item" open="`username`=case `account_id` " close=" end," separator=" ">when #{item.accountId} then #{username}</foreach>
+            <foreach collection="entityList" item="item" open="`password`=case `account_id` " close=" end," separator=" ">when #{item.accountId} then #{password}</foreach>
+            <foreach collection="entityList" item="item" open="`register_date`=case `account_id` " close=" end," separator=" ">when #{item.accountId} then #{registerDate}</foreach>
+        </trim>
+        <foreach collection="entityList" item="item" open="where `account_id` in (" close=")" separator=",">#{item.accountId}</foreach>
+    </update>
+
+    <delete id="delete">
+        delete from `account` where account_id=#{accountId}
+    </delete>
+</mapper>
