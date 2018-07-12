@@ -1,4 +1,4 @@
-# 逐步构建一种用于生产实践的基于Spring Cloud的小型互联网应用架构
+# 在生产实践中逐步构建一种基于Spring Cloud开源生态和阿里云基础设施的互联网应用架构
 
 <a name="top"></a>
 
@@ -14,7 +14,10 @@
   - [在开发环境启动服务](#dev-launch)
   - [生成在线接口文档](#rest-doc)
 - [第二个微服务](#second-app)
-  - []
+  - [调用其他服务](#invoke-api)
+  - [在开发环境中配置其他服务的地址](#address-api)
+  - [对异常的服务熔断](#fuse)
+  - [对异常的服务降级](#fallback)
 
 <a name="preface"></a>
 
@@ -147,22 +150,6 @@ package com.github.richterplus.common.api.bean.log;
 public class AppendLogReq extends CommonApiReq {
 
     /**
-     * 客户端id
-     */
-    @ApiModelProperty(value = "客户端id", required = true)
-    @NotNull
-    @Size(max = 20)
-    private String clientId;
-
-    /**
-     * 客户端版本号
-     */
-    @ApiModelProperty(value = "客户端版本号", required = true)
-    @NotNull
-    @Size(max = 10)
-    private String clientVersion;
-
-    /**
      * 用户id
      */
     @ApiModelProperty(value = "用户id", required = true)
@@ -221,7 +208,9 @@ public class AppendLogRes extends CommonApiRes {
 * 使用JSR303注解约束输入项
 * 使用`@ApiOperation`和`@ApiModelProperty`对方法和成员进行注释（这两个是`SpringFox`注解，可用于产生接口文档，稍后会演示如何使用）
 
-<a name="implement-api">实现服务接口</a>
+[【回到顶端】](#top)
+
+<a name="implement-api"></a>
 
 ### 实现服务接口
 
@@ -249,6 +238,8 @@ class LogApiImpl implements LogApi {
 
 如您所见，`LogApiImpl.append`方法直接返回一个包含随机UUID的`AppendLogRes`对象，请别着急，我们会在后面详细介绍如何完整实现该接口。
 
+[【回到顶端】](#top)
+
 <a name="deploy-api"></a>
 
 ### 发布服务接口
@@ -258,6 +249,8 @@ class LogApiImpl implements LogApi {
 * 在`pom.xml`中配置maven-source-plugin和maven-javadoc-plugin确保源代码和javadoc的部署
 * 使用mvn deploy命令发布common-api到私有仓库
 * 如果您使用的是诸如IDEA之类集成开发环境，可直接在Maven Projects菜单中找到common-api模块，双击Lifecycle中的deploy即可
+
+[【回到顶端】](#top)
 
 <a name="dev-launch"></a>
 
@@ -309,6 +302,8 @@ curl -X PUT -H 'content-type: application/json' -d '{"requestDateTime": 15306869
 }
 ```
 
+[【回到顶端】](#top)
+
 <a name="rest-doc"></a>
 
 ### 生成在线接口文档
@@ -357,3 +352,311 @@ class SpringFoxConfig {
 [【回到顶端】](#top)
 
 <a name="second-app"></a>
+
+## 第二个微服务
+
+接下来我们构建第二个微服务：passport-service，实现注册和登录接口，并且假设注册和登录需要调用common-service来记录系统日志。
+
+跟common-service一样，仍然定义两个模块，分别为接口声明的passport-api和接口实现的passport-service。
+
+声明注册和登录接口：
+
+```java
+//AccountApi.java
+package com.github.richterplus.passport.api;
+
+//省略import
+
+/**
+ * 账号API
+ */
+@RequestMapping("account")
+public interface AccountApi {
+
+    /**
+     * 注册
+     */
+    @ApiOperation("注册")
+    @RequestMapping(method = RequestMethod.PUT, value = "register")
+    RegisterAccountRes register(@RequestBody RegisterAccountReq req);
+    
+    /**
+     * 登录
+     */
+    @ApiOperation("登录")
+    @RequestMapping(method = RequestMethod.POST, value = "login")
+    LoginRes login(@RequestBody @Validated LoginReq req);
+}
+```
+
+```java
+//RegisterAccountReq.java
+package com.github.richterplus.passport.api.bean.account;
+
+//省略import
+
+/**
+ * 注册账号请求
+ */
+public class RegisterAccountReq extends PassportApiReq {
+
+    /**
+     * 用户名
+     */
+    @ApiModelProperty(value = "用户名", required = true)
+    @NotNull
+    @Size(min = 1)
+    private String username;
+
+    /**
+     * 密码
+     */
+    @ApiModelProperty(value = "密码", required = true)
+    @NotNull
+    @Size(min = 1)
+    private String password;
+
+    //省略getter和setter
+}
+```
+
+```java
+//RegisterAccountRes.java
+package com.github.richterplus.passport.api.bean.account;
+
+//省略import
+
+/**
+ * 注册账号响应
+ */
+public class RegisterAccountRes extends PassportApiRes {
+
+    /**
+     * 访问令牌
+     */
+    private String accessToken;
+
+    //省略getter和setter
+}
+```
+
+```java
+//LoginReq.java
+package com.github.richterplus.passport.api.bean.account;
+
+//省略import
+
+/**
+ * 登录请求
+ */
+public class LoginReq extends PassportApiReq {
+
+    /**
+     * 用户名
+     */
+    @ApiModelProperty(value = "用户名", required = true)
+    @NotNull
+    @Size(min = 1)
+    private String username;
+
+    /**
+     * 密码
+     */
+    @ApiModelProperty(value = "密码", required = true)
+    @NotNull
+    @Size(min = 1)
+    private String password;
+
+    //省略getter和setter
+}
+```
+
+```java
+//LoginRes.java
+package com.github.richterplus.passport.api.bean.account;
+
+//省略import
+
+/**
+ * 登录响应
+ */
+public class LoginRes extends PassportApiRes {
+
+    /**
+     * 访问令牌
+     */
+    private String accessToken;
+
+    //省略getter和setter
+}
+```
+
+[【回到顶端】](#top)
+
+<a name="invoke-api"></a>
+
+### 调用其他服务
+
+我们需要在AccountApi.register及AccountApi.login方法中调用common-service的日志服务，先来看代码示例
+
+```java
+//AccountApiImpl.java
+package com.github.richterplus.passport.api.impl;
+
+//省略import
+
+@RestController
+class AccountApiImpl implements AccountApi {
+
+    @Autowired
+    private LogApi logApi;
+
+    @Override
+    public RegisterAccountRes register(@RequestBody @Validated RegisterAccountReq req) {
+
+        logApi.append(new AppendLogReq() {
+            {
+                setLogType(LogType.REGISTER);
+                setUserId(0);
+                setObjectIds(Collections.emptyList());
+                setMessage("用户【" + req.getUsername() + "】注册");
+            }
+        });
+
+        return new RegisterAccountRes() {
+            {
+                setAccessToken(UUID.randomUUID().toString());
+            }
+        };
+    }
+
+    @Override
+    public LoginRes login(LoginReq req) {
+
+        logApi.append(new AppendLogReq() {
+            {
+                setLogType(LogType.REGISTER);
+                setUserId(0);
+                setObjectIds(Collections.emptyList());
+                setMessage("用户【" + req.getUsername() + "】登录");
+            }
+        });
+
+        return new LoginRes() {
+            {
+                setAccessToken(UUID.randomUUID().toString());
+            }
+        };
+    }
+}
+```
+
+如代码所示，我们直接使用@Autowire注解标记common-service中定义的LogApi实例，然后如同调用普通的类一样调用服务。
+
+为达到此目的，需要
+
+* 在pom.xml中添加`common-api`依赖
+* 在pom.xml中添加`spring-cloud-starter-openfeign`依赖
+* 添加`@EnableFeignClients`注解到应用程序配置类，在本示例中直接添加到Bootstrap类
+* 添加一个用`@FeignClient`注解的继承自`LogApi`的接口，如下所示：
+
+```java
+package com.github.richterplus.passport.service;
+
+//省略import
+
+@FeignClient(name = "common-service")
+interface LogService extends LogApi { }
+```
+
+[【回到顶端】](#top)
+
+<a name="address-api"></a>
+
+### 在开发环境中配置其他服务的地址
+
+在生产环境中，使用基于consul的服务注册与发现来找到服务的地址，但在开发环境中，往往希望能由开发人员自行指定特定服务的地址（例如经常需要调试某位开发人员机器上特定开发版本的某个服务）。因此，我们在开发环境禁用了服务注册与发现，并且在yml配置文件中自行配置其他服务的地址，如下所示：
+
+```yaml
+#bootstrap-dev.yml
+spring:
+  cloud:
+    consul:
+      enabled: false #禁用consul的服务注册与发现
+
+common-service: #与@FeignClient注解的name属性以及common-service配置的spring.application.name保持一致
+  ribbon:
+    listOfServers: localhost:7000 #配置common-service的负载均衡列表
+```
+
+现在让我们来启动passport-service和common-service，然后使用Postman或者curl命令请求注册接口
+
+```shell
+#使用curl命令请求服务
+curl -X PUT -H 'content-type: application/json' -d '{"username": "richterplus","password": "111111"}' http://localhost:7001/account/register
+```
+
+[【回到顶端】](#top)
+
+<a name="fuse"></a>
+
+### 对异常的服务熔断
+
+先以AccountApi.register以及AccountApi.login接口中调用LogApi.append服务的例子来说明什么是熔断。
+
+假设由于服务超负荷、硬件故障等各种原因，日志服务响应缓慢，此时又有大量的并发注册登录请求发送到passport-service。我们知道，注册和登录需要调用日志服务才能完成，而由于日志服务响应缓慢，则大量的注册和登录请求都在等待日志服务的响应，随着时间的推移，大量挂起的请求造成passport-service过载，但实际上passport-service并没有过错，而是受到了日志服务的拖累。
+
+更一般的情况，在实际的系统中，往往由多达数个或者数十个服务形成调用链，链条上任一节点的过载将直接影响所有后续节点，从而造成整个链路的不可用，这是难以接受的，因此需要引入服务熔断。
+
+还是以passport-service为例，是不是可以引入一种机制，使得passport-service发现日志服务过载时，在一段时间内不再请求日志服务，从而对自身形成保护？答案是肯定的。我们在请求其他服务时所用的@FeignClient已经涵盖此特性，默认情况下，在`10秒`内超过`20次请求`的前提下，有`50%`的请求失败则认为服务不可用，此时触发熔断，将不再请求服务。以passport-service为例，则可以理解为在10秒有超过20次对common-service请求的前提下，如果存在超过50%的失败，则任何对common-service的请求将不再发送到common-service。
+
+那失败是如何定义的？除了常规的连接失败及4xx、5xx异常外，Feign也能自定义connectTimeout（连接超时）和readTimeout（读取超时），默认的超时都是1秒。
+
+现在我们修改common-service的LogApi.append代码，把处理时间加长到4秒以上。
+
+```java
+package com.github.richterplus.common.api.impl;
+
+//省略import
+
+@RestController
+class LogApiImpl implements LogApi {
+
+    @Override
+    public AppendLogRes append(@RequestBody @Validated AppendLogReq req) {
+
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new AppendLogRes() {
+            {
+                setLogUuid(UUID.randomUUID().toString());
+            }
+        };
+    }
+}
+```
+
+使用Postman或者curl命令请求注册接口，返回500状态码，异常信息为ReadTimeout，可以修改connectTimeout和readTimeout，但一般情况下不建议这么做（原因请看上方有关熔断的说明）。我们在passport-service模块的bootstrap.yml文件中修改readTimeout。
+
+```yaml
+common-service:
+  ribbon:
+    ReadTimeout: 5000
+```
+
+再次使用Postman或者curl命令请求注册接口，可以看到正常返回。
+
+[【回到顶端】](#top)
+
+<a name="fallback"></a>
+
+### 对异常的服务降级
+
+以passport-service的注册和登录请求common-service的日志为例，假设common-service过载触发了passport-service熔断，那么所有对注册和登录的请求都将失败，虽然起到了保护passport-service的作用，但注册和登录功能却不可用了，这可能不是我们希望的。由于注册和登录时对common-service的依赖仅仅是记录日志，未及时记录甚至是漏记其实都是可以接受的，那是否可以在common-service不可用时，为日志功能提供一个降级的实现？例如一个本地的日志缓存队列或者直接丢弃对日志的记录。
+
+[【回到顶端】](#top)
+
