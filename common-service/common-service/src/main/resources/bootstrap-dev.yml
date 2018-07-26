@@ -1,4 +1,13 @@
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/common?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: iamchenjie
+  rabbitmq:
+    addresses: localhost:5672
+    username: stream
+    password: stream
   cloud:
     consul:
       enabled: false

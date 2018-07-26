@@ -1,16 +1,42 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     name: common-service
   jmx:
     enabled: false
+  cloud:
+    stream:
+      bindings:
+        logAppenderInput:
+          destination: logAppender
+          group: common
+          consumer:
+            max-attempts: 1
+        logAppenderOutput:
+          destination: logAppender
+      rabbit:
+        bindings:
+          logAppenderInput:
+            consumer:
+              auto-bind-dlq: true
+              dlq-ttl: 10000
+              dlq-dead-letter-exchange:
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
 
 management:
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
         include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
+
+mybatis:
+  mapper-locations: classpath*:/common-mapper/*Mapper.xml
 
 server:
   port: 7000

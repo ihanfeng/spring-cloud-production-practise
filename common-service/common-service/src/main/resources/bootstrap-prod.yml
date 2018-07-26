@@ -2,5 +2,8 @@ spring:
   cloud:
     consul:
       enabled: true
+      discovery:
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}_${random.value}
       config:
         format: YAML
