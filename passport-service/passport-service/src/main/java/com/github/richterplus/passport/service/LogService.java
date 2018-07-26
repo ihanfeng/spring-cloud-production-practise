@@ -7,7 +7,7 @@ import feign.hystrix.FallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 
-@FeignClient(name = "common-service", fallbackFactory = LogService.LogApiFallbackFactory.class)
+@FeignClient(name = "common-service"/*, fallbackFactory = LogService.LogApiFallbackFactory.class*/)
 interface LogService extends LogApi {
 
     @Component

@@ -5,8 +5,14 @@ spring:
     name: passport-service
   jmx:
     enabled: false
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
 
 management:
+  endpoint:
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
@@ -15,6 +21,22 @@ management:
 feign:
   hystrix:
     enabled: true
+  client:
+    config:
+      common-service:
+        connectTimeout: 1000
+        readTimeout: 1000
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 2000
+
+mybatis:
+  mapper-locations: classpath*:/common-mapper/*Mapper.xml
 
 server:
   port: 7001

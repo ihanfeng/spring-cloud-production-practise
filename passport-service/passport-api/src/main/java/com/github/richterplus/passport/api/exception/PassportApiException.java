@@ -6,6 +6,11 @@ import com.netflix.hystrix.exception.HystrixBadRequestException;
 public class PassportApiException extends HystrixBadRequestException implements ExceptionNotWrappedByHystrix {
 
     /**
+     * 无效的登录凭据
+     */
+    public static final String INVALID_CREDENTIAL = "invalid_credential";
+
+    /**
      * 创建Passport Api异常
      * @param code 异常码
      * @param message 异常信息

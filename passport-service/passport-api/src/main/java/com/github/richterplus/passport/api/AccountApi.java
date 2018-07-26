@@ -1,11 +1,7 @@
 package com.github.richterplus.passport.api;
 
-import com.github.richterplus.passport.api.bean.account.LoginReq;
-import com.github.richterplus.passport.api.bean.account.LoginRes;
-import com.github.richterplus.passport.api.bean.account.RegisterAccountReq;
-import com.github.richterplus.passport.api.bean.account.RegisterAccountRes;
+import com.github.richterplus.passport.api.bean.account.*;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,5 +24,12 @@ public interface AccountApi {
      */
     @ApiOperation("登录")
     @RequestMapping(method = RequestMethod.POST, value = "login")
-    LoginRes login(@RequestBody @Validated LoginReq req);
+    LoginRes login(@RequestBody LoginReq req);
+
+    /**
+     * 鉴权
+     */
+    @ApiOperation("鉴权")
+    @RequestMapping(method = RequestMethod.POST, value = "validate")
+    ValidateTokenRes validate(@RequestBody ValidateTokenReq req);
 }
