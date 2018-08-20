@@ -25,8 +25,12 @@
   - [使用关系型数据库查询和更新数据](#sql-database)
 - [实现注册登录](#implement-account)
   - [使用Redis](#redis)
+- [服务注册与发现](#discovery)
+  - [使用consul](#consul-discovery)
 - [服务运行状态监控](#running-status)
   - [服务健康状况](#health)
+  - [暴露更多有关应用程序的信息](#endpoints)
+  - [使用gui查看服务的运行状况](#spring-boot-admin)
 
 <a name="preface"></a>
 
@@ -1301,6 +1305,7 @@ class RedisConfig {
             public byte[] serialize(Object o) throws SerializationException {
                 JSONObject json = (JSONObject) JSON.toJSON(o);
                 Class<?> clazz = o.getClass();
+                //如果类型是个匿名类型，则需要循环推导到一个非匿名的父类，否则无法反序列化
                 while (clazz.isAnonymousClass()) {
                     clazz = clazz.getSuperclass();
                 }
@@ -1447,7 +1452,65 @@ curl http://localhost:7000/actuator/health
 management:
   endpoint:
     health:
-      show-details: never
+      show-details: always
 ```
 
+<a name="endpoints"></a>
 
+### 展示更多有关应用程序的信息
+
+`spring-boot-actuator`提供了丰富的endpoints来使得客户端可以通过http或者jmx来获取有关应用程序运行状况的信息，默认情况下，这些endpoints某些是开启，某些是未开启的，具体请查阅[SpringBoot官方指南](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints)。
+
+可以通过配置文件来打开或者关闭这些endpoint：
+
+```yaml
+management:
+  endpoints:
+    web: #表示通过http暴露的endpoint
+      exposure:
+        #include表示打开，exclude表示关闭
+        include: health, info, auditevents, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks, threaddump, heapdump, logfile
+```
+
+<a name="discovery"></a>
+
+## 服务注册与发现
+
+在生产环境中，使用`ribbon.listOfServers`来配置多个服务的url是不合适的，这是因为每次要对服务进行伸缩时，都需要修改对应的url，我们希望找到一种方式，当应用伸缩时，不需要修改配置，微服务集群能够自动感知集群的变化并适应，因此，需要引入服务注册与发现。
+
+<a name="consul-discovery"></a>
+
+### 使用Consul
+
+如同大多数的分布式架构，服务注册与发现也需要一个协调者，Spring Cloud官方支持的协调者有`Eureka`、`Zookeeper`和`Consul`。我们选择了`Consul`，不仅因为Consul简单易用，还因为Consul被设计为一个通用的分布式协调器，并原生支持Leader Election、Service Discovery等算法而不需要依赖客户端实现。此外，Consul基于Raft协议确保分布式一致性，并运用gossip协议在多个agent节点进行状态同步。这些设计使得我们相信，consul会得到广泛的支持。具体有关Consul和其他产品的比较，可参考Consul的官方文档[Consul vs. Other Software](https://www.consul.io/intro/vs/index.html)
+
+> 在common-service和passport-service中添加`spring-cloud-starter-consul-discovery`依赖
+
+```java
+//添加ConsulConfig类
+package com.github.richterplus.common.config;
+
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConditionalOnConsulEnabled //表示仅在consul启用时生效
+@EnableDiscoveryClient //启用服务发现客户端
+class ConsulConfig {
+}
+```
+
+```yaml
+#bootstrap-prod.yml
+spring:
+  cloud:
+    consul:
+      enabled: true
+      discovery:
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}_${random.value} #配置一个唯一的instanceId
+      config:
+        format: YAML
+
+```

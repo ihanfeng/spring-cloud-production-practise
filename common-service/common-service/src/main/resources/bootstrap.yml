@@ -33,7 +33,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
+        include: health, info, auditevents, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks, threaddump, heapdump, logfile
 
 mybatis:
   mapper-locations: classpath*:/common-mapper/*Mapper.xml

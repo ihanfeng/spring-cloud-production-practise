@@ -7,3 +7,14 @@ spring:
         instance-id: ${spring.application.name}_${random.value}
       config:
         format: YAML
+    discovery:
+      client:
+        composite-indicator:
+          enabled: false
+
+management:
+  health:
+    consul:
+      enabled: false
+
+

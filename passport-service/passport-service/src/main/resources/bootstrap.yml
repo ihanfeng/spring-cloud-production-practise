@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     name: passport-service
   jmx:
@@ -16,7 +16,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks
+        include: health, info, auditevents, beans, conditions, configprops, env, httptrace, loggers, metrics, mappings, scheduledtasks, threaddump, heapdump, logfile
 
 feign:
   hystrix:
